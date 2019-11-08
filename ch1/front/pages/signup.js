@@ -1,4 +1,5 @@
-import React, { useState, useCallback, memo } from 'react';
+import React, { useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { Form, Input, Checkbox, Button } from 'antd';
 
 const targetValue = e => {
@@ -14,7 +15,22 @@ const targetValue = e => {
 const TextInput = memo(({ value, onChange }) => {
   return <Input name="user-id" value={value} required onChange={onChange} />;
 });
+
+
+TextInput.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func
+};
 */
+
+// custom hook
+export const useInput = (initValue = null) => {
+  const [value, setter] = useState(initValue);
+  const handler = useCallback(e => {
+    setter(e.target.value);
+  }, []);
+  return [value, handler];
+};
 
 const Signup = () => {
   const [id, setId] = useState('');
@@ -66,17 +82,6 @@ const Signup = () => {
     setTermError(false);
     setTerm(e.target.checked);
   }, []);
-
-  /*
-  // custom hook
-  const useInput = (initValue = null) => {
-    const [value, setter] = useState(initValue);
-    const handler = useCallback(e => {
-      setter(e.target.value);
-    }, []);
-    return [value, handler];
-  };
-   */
 
   return (
     <>
