@@ -1,23 +1,9 @@
 import React from 'react';
 import { Form, Button, Input } from 'antd';
-
-const dummy = {
-  isLoggedIn: true,
-  imagePaths: [],
-  mainPosts: [
-    {
-      User: {
-        id: 1,
-        nickname: '베티'
-      },
-      content: 'first post',
-      img:
-        'https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60'
-    }
-  ]
-};
+import { useSelector } from 'react-redux';
 
 const PostForm = () => {
+  const { imagePaths } = useSelector(state => state.post);
   return (
     <Form style={{ margin: '10px 0 20px' }} encType="multipart/form-data">
       <Input.TextArea
@@ -32,20 +18,21 @@ const PostForm = () => {
         </Button>
       </div>
       <div>
-        {dummy.imagePaths.map((v, i) => {
-          return (
-            <div key={i} style={{ display: 'inline-block' }}>
-              <img
-                src={`http://localhost:3065/${v}`}
-                style={{ width: '200px' }}
-                alt={v}
-              />
-              <div>
-                <Button>제거</Button>
+        {imagePaths.length &&
+          imagePaths.map((v, i) => {
+            return (
+              <div key={i} style={{ display: 'inline-block' }}>
+                <img
+                  src={`http://localhost:3065/${v}`}
+                  style={{ width: '200px' }}
+                  alt={v}
+                />
+                <div>
+                  <Button>제거</Button>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
     </Form>
   );
