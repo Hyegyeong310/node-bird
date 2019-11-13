@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from "react";
 // import PropTypes from 'prop-types';
-import { Form, Input, Checkbox, Button } from 'antd';
-import { useDispatch } from 'react-redux';
-import { signUpAction } from '../reducers/user';
+import { Form, Input, Checkbox, Button } from "antd";
+import { useDispatch } from "react-redux";
+import { SIGN_UP_REQUEST } from "../reducers/user";
 
 const targetValue = e => {
   const {
@@ -35,10 +35,10 @@ export const useInput = (initValue = null) => {
 };
 
 const Signup = () => {
-  const [id, setId] = useState('');
-  const [nick, setNick] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordCheck, setPasswordCheck] = useState('');
+  const [id, setId] = useState("");
+  const [nick, setNick] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordCheck, setPasswordCheck] = useState("");
   const [term, setTerm] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [termError, setTermError] = useState(false);
@@ -53,13 +53,14 @@ const Signup = () => {
       if (!term) {
         return setTermError(true);
       }
-      dispatch(
-        signUpAction({
+      dispatch({
+        type: SIGN_UP_REQUEST,
+        data: {
           id,
           password,
           nick
-        })
-      );
+        }
+      });
     },
     [password, passwordCheck, term]
   );
@@ -133,7 +134,7 @@ const Signup = () => {
             onChange={onChangePasswordCheck}
           />
           {passwordError && (
-            <div style={{ color: 'red' }}>비밀번호가 일치하지 않습니다.</div>
+            <div style={{ color: "red" }}>비밀번호가 일치하지 않습니다.</div>
           )}
         </div>
         <div>
@@ -141,7 +142,7 @@ const Signup = () => {
             가입 약관에 동의합니다.
           </Checkbox>
           {termError && (
-            <div style={{ color: 'red' }}>약관에 동의하셔야 합니다.</div>
+            <div style={{ color: "red" }}>약관에 동의하셔야 합니다.</div>
           )}
         </div>
         <div style={{ marginTop: 10 }}>
