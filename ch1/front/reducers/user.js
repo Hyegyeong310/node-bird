@@ -2,70 +2,108 @@ const dummyUser = {
   nickname: "betty",
   Post: [],
   Followings: [],
-  Followers: []
+  Followers: [],
+  id: 1
 };
 
 export const initialState = {
-  isLoggedIn: false,
-  user: null,
-  signUpData: null
+  isLoggedIn: false, // 로그인 여부
+  isLoggingOut: false, // 로그아웃 시도 중
+  isLoggingIn: false, // 로그인 시도 중
+  logInErrorReason: "", // 로그인 에러 사유
+  signedUp: false, // 회원가입 성공
+  isSigningUp: false, // 회원가입 시도 중
+  SignUpErrorReason: "", // 회원가입 실패 사유
+  me: null, // 내정보
+  followingList: [], // 팔로잉 리스트
+  follewerList: [], // 팔로워 리스트
+  userInfo: null // 남의 정보
 };
+// 비동기 요청 보내는 애들. 비동기 요청은 액션이 3개 나옴 (요청, 성공, 실패)
 
-export const SIGN_UP_REQUEST = "SIGN_UP_REQUEST"; // 비동기 요청 보내는 애들. 비동기 요청은 액션이 3개 나옴
+// 회원가입 요청
+export const SIGN_UP_REQUEST = "SIGN_UP_REQUEST";
 export const SIGN_UP_SUCCESS = "SIGN_UP_SUCCESS";
 export const SIGN_UP_FAILURE = "SIGN_UP_FAILURE";
 
+// 로그인 요청
 export const LOG_IN_REQUEST = "LOG_IN_REQUEST";
 export const LOG_IN_SUCCESS = "LOG_IN_SUCCESS";
 export const LOG_IN_FAILURE = "LOG_IN_FAILURE";
 
+// 유저 로딩 요청
+export const LOAD_USER_REQUEST = "LOAD_USER_REQUEST";
+export const LOAD_USER_SUCCESS = "LOAD_USER_SUCCESS";
+export const LOAD_USER_FAILURE = "LOAD_USER_FAILURE";
+
+// 로그아웃 요청
 export const LOG_OUT_REQUEST = "LOG_OUT_REQUEST";
 export const LOG_OUT_SUCCESS = "LOG_OUT_SUCCESS";
 export const LOG_OUT_FAILURE = "LOG_OUT_FAILURE";
 
+// 팔로우, 팔로워 로딩 요청
+export const LOAD_FOLLOW_REQUEST = "LOAD_FOLLOW_REQUEST";
+export const LOAD_FOLLOW_SUCCESS = "LOAD_FOLLOW_SUCCESS";
+export const LOAD_FOLLOW_FAILURE = "LOAD_FOLLOW_FAILURE";
+
+// 팔로우 요청
+export const FOLLOW_USER_REQUEST = "FOLLOW_USER_REQUEST";
+export const FOLLOW_USER_SUCCESS = "FOLLOW_USER_SUCCESS";
+export const FOLLOW_USER_FAILURE = "FOLLOW_USER_FAILURE";
+
+// 언팔로우 요청
+export const UNFOLLOW_USER_REQUEST = "UNFOLLOW_USER_REQUEST";
+export const UNFOLLOW_USER_SUCCESS = "UNFOLLOW_USER_SUCCESS";
+export const UNFOLLOW_USER_FAILURE = "UNFOLLOW_USER_FAILURE";
+
+// 팔로워 삭제 요청
+export const REMOVE_FOLLOWER_REQUEST = "REMOVE_FOLLOWER_REQUEST";
+export const REMOVE_FOLLOWER_SUCCESS = "REMOVE_FOLLOWER_SUCCESS";
+export const REMOVE_FOLLOWER_FAILURE = "REMOVE_FOLLOWER_FAILURE";
+
+//
+export const ADD_POST_TO_ME = "ADD_POST_TO_ME";
+
 // 동기 요청은 액션이 1개. ex) INCREMENT_NUMBER
-
-export const signUpAction = data => ({
-  type: SIGN_UP_REQUEST,
-  data
-});
-export const signUpSuccess = {
-  type: SIGN_UP_SUCCESS
-};
-export const signUpFailure = {
-  type: SIGN_UP_FAILURE
-};
-
-export const loginAction = data => {
-  type: LOG_IN_REQUEST, data;
-};
-export const loginSucess = {
-  type: LOG_IN_SUCCESS
-};
-export const loginFailure = {
-  type: LOG_IN_FAILURE
-};
-
-export const logoutAction = data => {
-  type: LOG_OUT_REQUEST, data;
-};
-export const logoutSuccess = {
-  type: LOG_OUT_SUCCESS
-};
-export const logoutFailure = {
-  type: LOG_OUT_FAILURE
-};
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case LOG_IN_REQUEST:
-      return { ...state, loginData: action.data, isLoading: true };
-    case LOG_IN_SUCCESS:
-      return { ...state, isLoggedIn: true, user: dummyUser, isLoading: false };
-    case LOG_OUT_REQUEST:
-      return { ...state, isLoggedIn: false, user: null };
     case SIGN_UP_REQUEST:
-      return { ...state, signUpDate: action.data };
+      return { ...state, isSigningUp: true, SignUpErrorReason: "" };
+    case SIGN_UP_SUCCESS:
+      return { ...state, isSigningUp: false, signedUp: true };
+    case SIGN_UP_FAILURE:
+      return {
+        ...state,
+        isSigningUp: false,
+        signedUp: false,
+        SignUpErrorReason: action.error
+      };
+
+    case LOG_IN_REQUEST:
+      return {
+        ...state,
+        isLoggingIn: true,
+        logInErrorReason: ""
+      };
+    case LOG_IN_SUCCESS:
+      return {
+        ...state,
+        isLoggingIn: false,
+        isLoggedIn: true,
+        me: dummyUser,
+        isLoading: false
+      };
+    case LOG_IN_FAILURE:
+      return {
+        ...state,
+        isLoggingIn: false,
+        isLoggedIn: false,
+        logInErrorReason: action.error,
+        me: null
+      };
+    case LOG_OUT_REQUEST:
+      return { ...state, isLoggedIn: false, me: null };
     default:
       return state;
   }
