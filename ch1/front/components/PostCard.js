@@ -1,6 +1,6 @@
-import React from 'react';
-import { Avatar, Button, Card, Icon } from 'antd';
-import PropTypes from 'prop-types';
+import React from "react";
+import { Avatar, Button, Card, Icon } from "antd";
+import PropTypes from "prop-types";
 
 const PostCard = ({ post }) => {
   return (
