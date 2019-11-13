@@ -51,20 +51,18 @@ const PostForm = () => {
       </div>
       <div>
         {imagePaths.length > 0 &&
-          imagePaths.map((v, i) => {
-            return (
-              <div key={i} style={{ display: "inline-block" }}>
-                <img
-                  src={`http://localhost:3065/${v}`}
-                  style={{ width: "200px" }}
-                  alt={v}
-                />
-                <div>
-                  <Button>제거</Button>
-                </div>
+          imagePaths.map((v, i) => (
+            <div key={i} style={{ display: "inline-block" }}>
+              <img
+                src={`http://localhost:3065/${v}`}
+                style={{ width: "200px" }}
+                alt={v}
+              />
+              <div>
+                <Button>제거</Button>
               </div>
-            );
-          })}
+            </div>
+          ))}
       </div>
     </Form>
   );

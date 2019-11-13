@@ -14,22 +14,20 @@ import rootSage from "../sagas";
 // root 담당
 // 최초 1번만 로딩
 
-const NodeBird = ({ Component, store }) => {
-  return (
-    <Provider store={store}>
-      <Head>
-        <title>NodeBird</title>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/antd/3.23.6/antd.css"
-        />
-      </Head>
-      <AppLayout>
-        <Component />
-      </AppLayout>
-    </Provider>
-  );
-};
+const NodeBird = ({ Component, store }) => (
+  <Provider store={store}>
+    <Head>
+      <title>NodeBird</title>
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/antd/3.23.6/antd.css"
+      />
+    </Head>
+    <AppLayout>
+      <Component />
+    </AppLayout>
+  </Provider>
+);
 
 NodeBird.propTypes = {
   Component: PropTypes.elementType.isRequired,
