@@ -65,13 +65,13 @@ const Signup = () => {
       dispatch({
         type: SIGN_UP_REQUEST,
         data: {
-          id,
+          userId: id,
           password,
-          nick
+          nickname: nick
         }
       });
     },
-    [password, passwordCheck, term]
+    [id, nick, password, passwordCheck, term]
   );
 
   const onChangeId = useCallback(e => {
