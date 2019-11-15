@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Avatar, Button, Card, Comment, Form, Icon, Input, List } from "antd";
 import PropTypes from "prop-types";
+
 import { ADD_COMMENT_REQUEST } from "../reducers/post";
 
 const PostCard = ({ post }) => {

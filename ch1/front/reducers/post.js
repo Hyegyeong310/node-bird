@@ -1,17 +1,5 @@
 export const initialState = {
-  mainPosts: [
-    {
-      id: 1,
-      User: {
-        id: 1,
-        nickname: "베티"
-      },
-      content: "first post",
-      img:
-        "https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-      Comments: []
-    } // 화면에 보일 포스트들
-  ],
+  mainPosts: [], // 화면에 보일 포스트들
   imagePaths: [], // 미리보기 이미지 경로
   addPostErrorReason: "", // 포스트 업로드 실패 사유
   isAddingPost: false, //포스트 업로드 중
@@ -19,16 +7,6 @@ export const initialState = {
   isAddingComment: false,
   addCommentErrorReason: "",
   commentAdded: false
-};
-
-const dummyPost = {
-  id: 2,
-  User: {
-    id: 1,
-    nickname: "betty"
-  },
-  content: "나는 더미입니다.",
-  Comments: []
 };
 
 const dummyComment = {
@@ -104,11 +82,19 @@ export const REMOVE_POST_FAILURE = "REMOVE_POST_FAILURE";
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case LOAD_MAIN_POSTS_REQUEST:
-      return { ...state };
+      return {
+        ...state,
+        mainPosts: []
+      };
     case LOAD_MAIN_POSTS_SUCCESS:
-      return { ...state };
+      return {
+        ...state,
+        mainPosts: action.data
+      };
     case LOAD_MAIN_POSTS_FAILURE:
-      return { ...state };
+      return {
+        ...state
+      };
 
     case ADD_POST_REQUEST:
       return {
@@ -121,7 +107,7 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         isAddingPost: false,
-        mainPosts: [dummyPost, ...state.mainPosts],
+        mainPosts: [action.data, ...state.mainPosts],
         postAdded: true
       };
     case ADD_POST_FAILURE:
