@@ -22,7 +22,12 @@ passportConfig();
 app.use(morgan("dev"));
 app.use(express.json()); // 데이터 처리
 app.use(express.urlencoded({ extended: true })); // form 처리
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true
+  })
+);
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(
   expressSession({
@@ -32,7 +37,8 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: false // https를 사용할 때 true 사용
-    }
+    },
+    name: "rnbck"
   })
 );
 app.use(passport.initialize());
