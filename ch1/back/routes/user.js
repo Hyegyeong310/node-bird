@@ -2,10 +2,16 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const db = require("../models");
+let fullUser;
 
 const router = express.Router();
 
-router.get(`/`, (req, res) => {});
+router.get(`/`, (req, res) => {
+  if (!req.user) {
+    return res.status(401).send("로그인이 필요합니다.");
+  }
+  return res.json(fullUser);
+});
 router.post(`/`, async (req, res, next) => {
   try {
     const { password, nickname, userId } = req.body;
@@ -19,8 +25,8 @@ router.post(`/`, async (req, res, next) => {
     }
     const hashedPassword = await bcrypt.hash(password, 12); // salt는 10~13 사이로
     const newUser = await db.User.create({
-      nickname: nickname,
-      userId: userId,
+      nickname,
+      userId,
       password: hashedPassword
     });
     console.log(newUser);
@@ -53,7 +59,7 @@ router.post(`/login`, (req, res, next) => {
         if (loginErr) {
           return next(loginErr);
         }
-        const fullUser = await db.User.findOne({
+        fullUser = await db.User.findOne({
           where: { id: user.id },
           include: [
             {
@@ -74,7 +80,6 @@ router.post(`/login`, (req, res, next) => {
           ],
           attributes: ["id", "nickname", "userId"]
         });
-        console.log(fullUser);
         return res.json(fullUser);
       } catch (e) {
         console.error(e);
