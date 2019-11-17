@@ -21,7 +21,13 @@ import {
   LOAD_COMMENTS_FAILURE,
   UPLOAD_IMAGES_REQUEST,
   UPLOAD_IMAGES_SUCCESS,
-  UPLOAD_IMAGES_FAILURE
+  UPLOAD_IMAGES_FAILURE,
+  LIKE_POST_SUCCESS,
+  LIKE_POST_FAILURE,
+  LIKE_POST_REQUEST,
+  UNLIKE_POST_SUCCESS,
+  UNLIKE_POST_FAILURE,
+  UNLIKE_POST_REQUEST
 } from "../reducers/post";
 
 function addPostAPI(postData) {
@@ -208,6 +214,68 @@ function* watchUploadImages() {
   yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImage); // 게시글은 여러번 클릭해도 1번만 게시되어야 한다.
 }
 
+function likePostAPI(postId) {
+  return axios.post(
+    `/post/${postId}/like`,
+    {},
+    {
+      withCredentials: true
+    }
+  );
+}
+
+function* likePost(action) {
+  try {
+    const { data } = yield call(likePostAPI, action.data);
+    yield put({
+      type: LIKE_POST_SUCCESS,
+      data: {
+        postId: action.data,
+        userId: data.userId
+      }
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({
+      type: LIKE_POST_FAILURE,
+      error: e
+    });
+  }
+}
+
+function* watchLikePost() {
+  yield takeLatest(LIKE_POST_REQUEST, likePost);
+}
+
+function unlikePostAPI(postId) {
+  return axios.delete(`/post/${postId}/like`, {
+    withCredentials: true
+  });
+}
+
+function* unlikePost(action) {
+  try {
+    const { data } = yield call(unlikePostAPI, action.data);
+    yield put({
+      type: UNLIKE_POST_SUCCESS,
+      data: {
+        postId: action.data,
+        userId: data.userId
+      }
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({
+      type: UNLIKE_POST_FAILURE,
+      error: e
+    });
+  }
+}
+
+function* watchUnlikePost() {
+  yield takeLatest(UNLIKE_POST_REQUEST, unlikePost);
+}
+
 export default function* postSaga() {
   yield all([
     fork(watchLoadMainPosts),
@@ -216,6 +284,8 @@ export default function* postSaga() {
     fork(watchLoadComments),
     fork(watchLoadHashtagPosts),
     fork(watchLoadUserPosts),
-    fork(watchUploadImages)
+    fork(watchUploadImages),
+    fork(watchLikePost),
+    fork(watchUnlikePost)
   ]);
 }
