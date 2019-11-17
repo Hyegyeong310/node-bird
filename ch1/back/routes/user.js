@@ -1,15 +1,13 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
+const { isLoggedIn } = require("./middleware");
 const db = require("../models");
 let fullUser;
 
 const router = express.Router();
 
-router.get(`/`, (req, res) => {
-  if (!req.user) {
-    return res.status(401).send("로그인이 필요합니다.");
-  }
+router.get(`/`, isLoggedIn, (req, res) => {
   return res.json(fullUser);
 });
 router.post(`/`, async (req, res, next) => {
@@ -29,7 +27,6 @@ router.post(`/`, async (req, res, next) => {
       userId,
       password: hashedPassword
     });
-    console.log(newUser);
     return res.status(200).json(newUser);
   } catch (e) {
     console.error(e);
