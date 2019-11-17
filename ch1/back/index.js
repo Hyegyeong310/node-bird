@@ -11,6 +11,7 @@ const db = require("./models");
 const userAPIRouter = require("./routes/user");
 const postAPIRouter = require("./routes/post");
 const postsAPIRouter = require("./routes/posts");
+const hashtagAPIRouter = require("./routes/hashtag");
 
 dotenv.config();
 
@@ -48,6 +49,7 @@ app.use(passport.session()); // 미들웨어 간 의존관계가 있을 시 순�
 app.use(`/api/user`, userAPIRouter);
 app.use(`/api/post`, postAPIRouter);
 app.use(`/api/posts`, postsAPIRouter);
+app.use(`/api/hashtag`, hashtagAPIRouter);
 
 app.listen(PORT, () =>
   console.log(`server is running on http://localhost:${PORT}`)

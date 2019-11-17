@@ -9,16 +9,6 @@ export const initialState = {
   commentAdded: false
 };
 
-const dummyComment = {
-  id: 1,
-  User: {
-    id: 1,
-    nickname: "bbb"
-  },
-  createdAt: new Date(),
-  content: "더미 댓글입니다."
-};
-
 // 메인 포스트 로딩 액션
 export const LOAD_MAIN_POSTS_REQUEST = "LOAD_MAIN_POSTS_REQUEST";
 export const LOAD_MAIN_POSTS_SUCCESS = "LOAD_MAIN_POSTS_SUCCESS";
@@ -82,16 +72,22 @@ export const REMOVE_POST_FAILURE = "REMOVE_POST_FAILURE";
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case LOAD_MAIN_POSTS_REQUEST:
+    case LOAD_HASHTAG_POSTS_REQUEST:
+    case LOAD_USER_POSTS_REQUEST:
       return {
         ...state,
         mainPosts: []
       };
     case LOAD_MAIN_POSTS_SUCCESS:
+    case LOAD_HASHTAG_POSTS_SUCCESS:
+    case LOAD_USER_POSTS_SUCCESS:
       return {
         ...state,
         mainPosts: action.data
       };
     case LOAD_MAIN_POSTS_FAILURE:
+    case LOAD_HASHTAG_POSTS_FAILURE:
+    case LOAD_USER_POSTS_FAILURE:
       return {
         ...state
       };
@@ -129,7 +125,7 @@ const reducer = (state = initialState, action) => {
         v => v.id === action.data.postId
       );
       const post = state.mainPosts[postIndex];
-      const Comments = [...post.Comments, dummyComment];
+      const Comments = [...post.Comments, action.data.comment];
       const mainPosts = [...state.mainPosts];
       mainPosts[postIndex] = { ...post, Comments };
       return {

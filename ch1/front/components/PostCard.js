@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
+import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
 import { Avatar, Button, Card, Comment, Form, Icon, Input, List } from "antd";
 import PropTypes from "prop-types";
@@ -53,9 +54,38 @@ const PostCard = ({ post }) => {
         extra={<Button>팔로우</Button>}
       >
         <Card.Meta
-          avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
+          avatar={
+            <Link
+              href={{ pathname: "/user", query: { id: post.User.id } }}
+              as={`/user/${post.User.id}`}
+            >
+              <a>
+                <Avatar>{post.User.nickname[0]}</Avatar>
+              </a>
+            </Link>
+          }
           title={post.User.nickname}
-          description={post.content}
+          description={
+            <div>
+              {post.content.split(/(#[^\s]+)/g).map(v => {
+                if (v.match(/#[^\s]+/)) {
+                  return (
+                    <Link
+                      href={{
+                        pathname: "/hashtag",
+                        query: { tag: v.slice(1) }
+                      }}
+                      as={`/hashtag/${v.slice(1)}`}
+                      key={v}
+                    >
+                      <a>{v}</a>
+                    </Link>
+                  );
+                }
+                return v;
+              })}
+            </div>
+          }
         />
       </Card>
       {commentFormOpened && (
@@ -80,7 +110,16 @@ const PostCard = ({ post }) => {
               <li>
                 <Comment
                   author={item.User.nickname}
-                  avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
+                  avatar={
+                    <Link
+                      href={{ pathname: "/user", query: { id: post.User.id } }}
+                      as={`/user/${post.User.id}`}
+                    >
+                      <a>
+                        <Avatar>{item.User.nickname[0]}</Avatar>
+                      </a>
+                    </Link>
+                  }
                   content={item.content}
                 />
               </li>
