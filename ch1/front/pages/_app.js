@@ -14,7 +14,7 @@ import rootSage from "../sagas";
 // root 담당
 // 최초 1번만 로딩
 
-const NodeBird = ({ Component, store }) => (
+const NodeBird = ({ Component, store, pageProps }) => (
   <Provider store={store}>
     <Head>
       <title>NodeBird</title>
@@ -24,14 +24,24 @@ const NodeBird = ({ Component, store }) => (
       />
     </Head>
     <AppLayout>
-      <Component />
+      <Component {...pageProps} />
     </AppLayout>
   </Provider>
 );
 
 NodeBird.propTypes = {
   Component: PropTypes.elementType.isRequired,
-  store: PropTypes.object.isRequired
+  store: PropTypes.object.isRequired,
+  pageProps: PropTypes.object.isRequired
+};
+
+NodeBird.getInitialProps = async context => {
+  const { ctx, Component } = context;
+  let pageProps = {};
+  if (Component.getInitialProps) {
+    pageProps = await Component.getInitialProps(ctx);
+  }
+  return { pageProps };
 };
 
 const configureStore = (initialState, options) => {
