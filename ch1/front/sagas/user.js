@@ -15,8 +15,6 @@ import {
 } from "../reducers/user";
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:3065/api";
-
 /*
 for (let i = 0; i < 5; i++) {
     // yield로 인해 무한 반복하지만 yield가 실행되야 다음 호출이 가능함. 보통의 무한루프와 다르다.
@@ -108,19 +106,20 @@ function* watchLogout() {
   yield takeEvery(LOG_OUT_REQUEST, logout);
 }
 
-function loadUserAPI() {
+function loadUserAPI(userId) {
   // 처음에 쿠키로 내 정보를 가져오는 부분
-  return axios.get("/user", {
+  return axios.get(userId ? `/user/${userId}` : "/user", {
     withCredentials: true
   });
 }
 
-function* loadUser() {
+function* loadUser(action) {
   try {
-    const { data } = yield call(loadUserAPI);
+    const { data } = yield call(loadUserAPI, action.data);
     yield put({
       type: LOAD_USER_SUCCESS,
-      data
+      data,
+      me: !action.data
     });
   } catch (e) {
     console.error(e);
