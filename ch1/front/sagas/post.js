@@ -18,7 +18,10 @@ import {
   LOAD_USER_POSTS_FAILURE,
   LOAD_COMMENTS_SUCCESS,
   LOAD_COMMENTS_REQUEST,
-  LOAD_COMMENTS_FAILURE
+  LOAD_COMMENTS_FAILURE,
+  UPLOAD_IMAGES_REQUEST,
+  UPLOAD_IMAGES_SUCCESS,
+  UPLOAD_IMAGES_FAILURE
 } from "../reducers/post";
 
 function addPostAPI(postData) {
@@ -179,6 +182,32 @@ function* watchLoadUserPosts() {
   yield takeLatest(LOAD_USER_POSTS_REQUEST, loadUserPosts);
 }
 
+function uploadImageAPI(formData) {
+  return axios.post(`/post/images`, formData, {
+    withCredentials: true
+  });
+}
+
+function* uploadImage(action) {
+  try {
+    const { data } = yield call(uploadImageAPI, action.data);
+    yield put({
+      type: UPLOAD_IMAGES_SUCCESS,
+      data
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({
+      type: UPLOAD_IMAGES_FAILURE,
+      error: e
+    });
+  }
+}
+
+function* watchUploadImages() {
+  yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImage); // 게시글은 여러번 클릭해도 1번만 게시되어야 한다.
+}
+
 export default function* postSaga() {
   yield all([
     fork(watchLoadMainPosts),
@@ -186,6 +215,7 @@ export default function* postSaga() {
     fork(watchAddComment),
     fork(watchLoadComments),
     fork(watchLoadHashtagPosts),
-    fork(watchLoadUserPosts)
+    fork(watchLoadUserPosts),
+    fork(watchUploadImages)
   ]);
 }

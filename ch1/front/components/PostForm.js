@@ -1,7 +1,11 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
 import { Form, Button, Input } from "antd";
 import { useSelector, useDispatch } from "react-redux";
-import { ADD_POST_REQUEST } from "../reducers/post";
+import {
+  ADD_POST_REQUEST,
+  UPLOAD_IMAGES_REQUEST,
+  REMOVE_IMAGE
+} from "../reducers/post";
 
 const PostForm = () => {
   const [text, setText] = useState("");
@@ -9,6 +13,7 @@ const PostForm = () => {
   const { imagePaths, isAddingPost, postAdded } = useSelector(
     state => state.post
   );
+  const imageInput = useRef();
 
   useEffect(() => {
     setText("");
@@ -23,12 +28,45 @@ const PostForm = () => {
       if (!text || !text.trim()) {
         return alert("게시글을 작성하세요.");
       }
+      const formData = new FormData();
+      imagePaths.forEach(i => {
+        formData.append("image", i);
+      });
+      formData.append("content", text.trim());
       dispatch({
         type: ADD_POST_REQUEST,
-        data: { content: text.trim() }
+        data: formData
       });
     },
-    [text]
+    [text, imagePaths]
+  );
+
+  // image upload
+  const onChangeImages = useCallback(e => {
+    const { files } = e.target;
+    console.log(files);
+    const imageFormData = new FormData();
+    [].forEach.call(files, f => {
+      // multer name과 일치해야 한다.
+      imageFormData.append("image", f);
+    });
+    dispatch({
+      type: UPLOAD_IMAGES_REQUEST,
+      data: imageFormData
+    });
+  }, []);
+  const onClickImageUpload = useCallback(() => {
+    imageInput.current.click();
+  }, [imageInput.current]);
+
+  const onRemoveImage = useCallback(
+    index => () => {
+      dispatch({
+        type: REMOVE_IMAGE,
+        index
+      });
+    },
+    []
   );
 
   return (
@@ -44,8 +82,14 @@ const PostForm = () => {
         placeholder="어떤 신기한 일이 있었나요?"
       />
       <div>
-        <input type="file" multiple hidden />
-        <Button>이미지 업로드</Button>
+        <input
+          type="file"
+          multiple
+          hidden
+          ref={imageInput}
+          onChange={onChangeImages}
+        />
+        <Button onClick={onClickImageUpload}>이미지 업로드</Button>
         <Button
           type="primary"
           style={{ float: "right" }}
@@ -65,7 +109,7 @@ const PostForm = () => {
                 alt={v}
               />
               <div>
-                <Button>제거</Button>
+                <Button onClick={onRemoveImage(i)}>제거</Button>
               </div>
             </div>
           ))}

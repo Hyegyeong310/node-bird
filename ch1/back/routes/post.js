@@ -1,9 +1,25 @@
 const express = require("express");
+const multer = require("multer");
+const path = require("path");
 const router = express.Router();
 const { isLoggedIn } = require("./middleware");
 const db = require("../models");
 
-router.post(`/`, isLoggedIn, async (req, res, next) => {
+const upload = multer({
+  storage: multer.diskStorage({
+    destination(req, file, done) {
+      done(null, "uploads"); // done(server error, success)
+    },
+    filename(req, file, done) {
+      const ext = path.extname(file.originalname);
+      const basename = path.basename(file.originalname, ext); // 제로초.png, ext === png, basename === 제로초
+      done(null, basename + new Date().valueOf() + ext);
+    }
+  }),
+  limits: { fileSize: 20 * 1024 * 1024 }
+});
+
+router.post(`/`, isLoggedIn, upload.none(), async (req, res, next) => {
   // /api/post
   try {
     const { content } = req.body;
@@ -24,6 +40,21 @@ router.post(`/`, isLoggedIn, async (req, res, next) => {
       console.log({ result });
       await newPost.addHashtags(result.map(r => r[0]));
     }
+    if (req.body.image) {
+      // image address를 여러개 올리면 image:[주소1, 주소2]
+      if (Array.isArray(req.body.image)) {
+        const images = await Promise.all(
+          req.body.image.map(image => {
+            return db.Image.create({ src: image });
+          })
+        );
+        await newPost.addImages(images);
+      } else {
+        // 이미지가 하나면 image: 주소1
+        const image = await db.Image.create({ src: req.body.image });
+        await newPost.addImage(image);
+      }
+    }
     /*
     // 1번째 방법
     const User = await newPost.getUser();
@@ -35,7 +66,11 @@ router.post(`/`, isLoggedIn, async (req, res, next) => {
       where: { id: newPost.id },
       include: [
         {
-          model: db.User
+          model: db.User,
+          attributes: ["id", "nickname"]
+        },
+        {
+          model: db.Image
         }
       ]
     });
@@ -45,7 +80,11 @@ router.post(`/`, isLoggedIn, async (req, res, next) => {
     next(e);
   }
 });
-router.post(`/images`, (req, res) => {});
+
+// upload.array() -> 여러 장, .single() -> 한 장, fields() -> formData에서 이미지마다 name이 다를 때, none() -> 이미지 or file 등을 하나도 올리지 않을 때
+router.post(`/images`, upload.array("image"), (req, res) => {
+  res.json(req.files.map(v => v.filename));
+});
 
 router.get("/:id/comments", async (req, res, next) => {
   try {

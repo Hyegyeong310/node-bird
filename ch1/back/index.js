@@ -21,6 +21,7 @@ db.sequelize.sync();
 passportConfig();
 
 app.use(morgan("dev"));
+app.use("/", express.static("uploads"));
 app.use(express.json()); // 데이터 처리
 app.use(express.urlencoded({ extended: true })); // form 처리
 app.use(

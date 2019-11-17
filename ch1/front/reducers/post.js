@@ -104,7 +104,8 @@ const reducer = (state = initialState, action) => {
         ...state,
         isAddingPost: false,
         mainPosts: [action.data, ...state.mainPosts],
-        postAdded: true
+        postAdded: true,
+        imagePaths: []
       };
     case ADD_POST_FAILURE:
       return {
@@ -153,6 +154,24 @@ const reducer = (state = initialState, action) => {
         mainPosts
       };
     }
+    case REMOVE_IMAGE:
+      return {
+        ...state,
+        imagePaths: state.imagePaths.filter((v, i) => i !== action.index)
+      };
+    case UPLOAD_IMAGES_REQUEST:
+      return {
+        ...state
+      };
+    case UPLOAD_IMAGES_SUCCESS:
+      return {
+        ...state,
+        imagePaths: [...state.imagePaths, ...action.data]
+      };
+    case UPLOAD_IMAGES_FAILURE:
+      return {
+        ...state
+      };
     default:
       return state;
   }
